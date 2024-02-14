@@ -53,7 +53,6 @@ if ($conn->connect_error) {
 
 // Check if the server request method is POST for file upload
 if ($_SERVER["REQUEST_METHOD"] == "POST" && ($_SESSION['role'] === 'A' || $_SESSION['role'] === 'C')) {
-    // Your existing upload code goes here...
     // Check if files were uploaded
 if (isset($_FILES["image"])) {
     $uploadedFiles = $_FILES["image"];
@@ -91,7 +90,6 @@ if (isset($_FILES["image"])) {
 } else {
     echo "No images were uploaded.";
 }
-
 }
 
 // Check if the server request method is GET and view_images or download is set
@@ -122,7 +120,7 @@ if ($result->num_rows > 0) {
     echo "No images found in $selectedFolder.";
 }
 
-if (isset($_GET['download']) && $_GET['download'] == 1) {
+if (isset($_GET['download']) && $_GET['download'] == download) {
     // Create a temporary directory for storing images
     $tempDir = sys_get_temp_dir() . '/' . uniqid('images_') . '/';
     if (!mkdir($tempDir) && !is_dir($tempDir)) {
@@ -208,7 +206,7 @@ $conn->close();
                 <option value="Case002">Case002</option>
                 <option value="Case003">Case003</option>
             </select>
-            <input type="submit" name="view_images" value="View Images">
+            <input type="submit" name="download" value="download" class="download-link" id="download_zip" />
         </form>
 
         <!-- Download button -->
