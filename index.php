@@ -119,6 +119,7 @@ if ($result->num_rows > 0) {
 } else {
     echo "No images found in $selectedFolder.";
 }
+}
 
 // Check if the download GET parameter is set
 if (isset($_GET['download']) && $_GET['download'] == 'download' && isset($_GET['folder'])) {
