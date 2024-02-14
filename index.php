@@ -244,7 +244,7 @@ $conn->close();
                 <option value="Case003">Case003</option>
             </select>
             <input type="submit" name="view_images" value="View Images">
-            <input type="submit" name="download" value="download" class="download-link" id="download_zip" />
+            <a href="index.php?download=download&folder=<?php echo $selectedFolder; ?>" class="download-link">Download</a>
         </form>
     <?php endif; ?>
 
