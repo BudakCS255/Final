@@ -51,76 +51,6 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Check if the server request method is POST for file upload
-if ($_SERVER["REQUEST_METHOD"] == "POST" && ($_SESSION['role'] === 'A' || $_SESSION['role'] === 'C')) {
-    // Check if files were uploaded
-if (isset($_FILES["image"])) {
-    $uploadedFiles = $_FILES["image"];
-    $folder = sanitize_folder($_POST["folder"]); // Sanitize the folder input
-
-    // Loop through the uploaded files
-    foreach ($uploadedFiles["error"] as $key => $error) {
-        // Check for file upload errors
-        if ($error == UPLOAD_ERR_OK) {
-            // Get the image data
-            $imageData = file_get_contents($uploadedFiles["tmp_name"][$key]);
-
-            // Encrypt the image data
-            $encryptedImageData = xor_encrypt_decrypt($imageData, $encryptionKey);
-
-            // Prepare and execute the database insertion
-            $stmt = $conn->prepare("INSERT INTO $folder (images) VALUES (?)");
-            $null = NULL; // This is needed to bind the blob data
-            $stmt->bind_param("b", $null);
-            $stmt->send_long_data(0, $encryptedImageData);
-            $stmt->execute();
-
-            if ($stmt->affected_rows > 0) {
-                echo "Image uploaded successfully!";
-            } else {
-                echo "Failed to upload the image.";
-            }
-
-            // Close the statement
-            $stmt->close();
-        } else {
-            echo "File upload error: " . $error;
-        }
-    }
-} else {
-    echo "No images were uploaded.";
-}
-}
-
-// Check if the server request method is GET and view_images or download is set
-if ($_SERVER["REQUEST_METHOD"] == "GET" && (isset($_GET['view_images']) || isset($_GET['download'])) && ($_SESSION['role'] === 'B' || $_SESSION['role'] === 'C')) {
-    // Your existing code for viewing and downloading images goes here...
-    // Query to retrieve encrypted image data from the selected folder table
-    $selectedFolder = sanitize_folder($_GET['folder']);
-    $sql = "SELECT id, images FROM $selectedFolder";
-    $result = $conn->query($sql);
-
-if ($result->num_rows > 0) {
-    // Output the images
-    while ($row = $result->fetch_assoc()) {
-        $imageId = $row["id"];
-        $encryptedImageData = $row["images"];
-
-        // Decrypt the image data
-        $decryptedImageData = xor_encrypt_decrypt($encryptedImageData, $encryptionKey);
-
-        // Convert to base64 for displaying as an image
-        $base64Image = base64_encode($decryptedImageData);
-        echo "<div class='image-item'>";
-        echo "<h2>Image $imageId</h2>";
-        echo "<img src='data:image/jpeg;base64,$base64Image' alt='Image $imageId'>";
-        echo "</div>";
-    }
-} else {
-    echo "No images found in $selectedFolder.";
-}
-}
-
 // Check if the download GET parameter is set
 if (isset($_GET['download']) && $_GET['download'] == 'download' && isset($_GET['folder'])) {
     // Sanitize the folder input
@@ -203,6 +133,76 @@ if (isset($_GET['download']) && $_GET['download'] == 'download' && isset($_GET['
     }
 
     $conn->close();
+}
+
+// Check if the server request method is POST for file upload
+if ($_SERVER["REQUEST_METHOD"] == "POST" && ($_SESSION['role'] === 'A' || $_SESSION['role'] === 'C')) {
+    // Check if files were uploaded
+if (isset($_FILES["image"])) {
+    $uploadedFiles = $_FILES["image"];
+    $folder = sanitize_folder($_POST["folder"]); // Sanitize the folder input
+
+    // Loop through the uploaded files
+    foreach ($uploadedFiles["error"] as $key => $error) {
+        // Check for file upload errors
+        if ($error == UPLOAD_ERR_OK) {
+            // Get the image data
+            $imageData = file_get_contents($uploadedFiles["tmp_name"][$key]);
+
+            // Encrypt the image data
+            $encryptedImageData = xor_encrypt_decrypt($imageData, $encryptionKey);
+
+            // Prepare and execute the database insertion
+            $stmt = $conn->prepare("INSERT INTO $folder (images) VALUES (?)");
+            $null = NULL; // This is needed to bind the blob data
+            $stmt->bind_param("b", $null);
+            $stmt->send_long_data(0, $encryptedImageData);
+            $stmt->execute();
+
+            if ($stmt->affected_rows > 0) {
+                echo "Image uploaded successfully!";
+            } else {
+                echo "Failed to upload the image.";
+            }
+
+            // Close the statement
+            $stmt->close();
+        } else {
+            echo "File upload error: " . $error;
+        }
+    }
+} else {
+    echo "No images were uploaded.";
+}
+}
+
+// Check if the server request method is GET and view_images or download is set
+if ($_SERVER["REQUEST_METHOD"] == "GET" && (isset($_GET['view_images']) || isset($_GET['download'])) && ($_SESSION['role'] === 'B' || $_SESSION['role'] === 'C')) {
+    // Your existing code for viewing and downloading images goes here...
+    // Query to retrieve encrypted image data from the selected folder table
+    $selectedFolder = sanitize_folder($_GET['folder']);
+    $sql = "SELECT id, images FROM $selectedFolder";
+    $result = $conn->query($sql);
+
+if ($result->num_rows > 0) {
+    // Output the images
+    while ($row = $result->fetch_assoc()) {
+        $imageId = $row["id"];
+        $encryptedImageData = $row["images"];
+
+        // Decrypt the image data
+        $decryptedImageData = xor_encrypt_decrypt($encryptedImageData, $encryptionKey);
+
+        // Convert to base64 for displaying as an image
+        $base64Image = base64_encode($decryptedImageData);
+        echo "<div class='image-item'>";
+        echo "<h2>Image $imageId</h2>";
+        echo "<img src='data:image/jpeg;base64,$base64Image' alt='Image $imageId'>";
+        echo "</div>";
+    }
+} else {
+    echo "No images found in $selectedFolder.";
+}
 }
 
 // Close the database connection
