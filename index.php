@@ -244,6 +244,7 @@ $conn->close();
             </select>
             <input type="submit" name="view_images" value="View Images">
             <input type="submit" name="download" value="download" class="download-link" id="download_zip" />
+        </form>
     <?php endif; ?>
 
     <!-- Feedback area for displaying messages -->
