@@ -244,7 +244,7 @@ $conn->close();
                 <option value="Case003">Case003</option>
             </select>
             <input type="submit" name="view_images" value="View Images">
-            <a href="index.php?download=download&folder=<?php echo $selectedFolder; ?>" class="download-link">Download</a>
+            <input type="submit" name="download" value="download" class="download-link" id="download_zip" />
         </form>
     <?php endif; ?>
 
@@ -256,12 +256,11 @@ $conn->close();
         }
         ?>
 
-            <!-- Logout Form -->
-<form method="post">
-    <input type="hidden" name="action" value="logout">
-    <input type="submit" value="Logout">
-</form>
-        
+    <!-- Logout Form -->
+        <form method="post">
+            <input type="hidden" name="action" value="logout">
+            <input type="submit" value="Logout">
+        </form>
     </div>
 </body>
 </html>
