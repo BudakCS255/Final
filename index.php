@@ -206,15 +206,8 @@ $conn->close();
                 <option value="Case002">Case002</option>
                 <option value="Case003">Case003</option>
             </select>
+            <input type="submit" name="view_images" value="View Images">
             <input type="submit" name="download" value="download" class="download-link" id="download_zip" />
-        </form>
-
-        <!-- Download button -->
-        <form action="index.php" method="GET">
-            <input type="hidden" name="folder" value="<?php echo $_GET['folder']; ?>">
-            <input type="hidden" name="download" value="1">
-            <button type="submit" name="download_btn" class="download-link" id="download_btn">Click here to download images</button>
-        </form>
     <?php endif; ?>
 
     <!-- Feedback area for displaying messages -->
